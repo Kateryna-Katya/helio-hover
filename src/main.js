@@ -78,3 +78,58 @@ document.addEventListener('DOMContentLoaded', () => {
     
     console.log('Helio-Hover System: Online');
 });
+// --- HERO ANIMATION: DIGITAL WAVES ---
+const waveCanvas = document.getElementById('hero-waves');
+
+if (waveCanvas) {
+    const ctx = waveCanvas.getContext('2d');
+    let width, height;
+    
+    // Настройки волн
+    const waves = [
+        { y: 0.5, length: 0.01, amplitude: 100, speed: 0.02, color: 'rgba(59, 130, 246, 0.2)' }, // Синяя прозрачная
+        { y: 0.5, length: 0.02, amplitude: 50, speed: 0.015, color: 'rgba(59, 130, 246, 0.5)' }, // Основная
+        { y: 0.5, length: 0.005, amplitude: 150, speed: 0.005, color: 'rgba(255, 255, 255, 0.05)' } // Фоновая широкая
+    ];
+    
+    let increment = 0;
+
+    function resize() {
+        width = waveCanvas.width = window.innerWidth;
+        height = waveCanvas.height = window.innerHeight;
+    }
+
+    function draw() {
+        ctx.clearRect(0, 0, width, height);
+        increment += 0.01;
+
+        waves.forEach(wave => {
+            ctx.beginPath();
+            
+            // Начинаем рисовать волну
+            for (let i = 0; i < width; i++) {
+                // Формула синусоиды: y = sin(x * length + time) * amplitude
+                const y = height * wave.y + Math.sin(i * wave.length + increment * (wave.speed * 100)) * wave.amplitude;
+                
+                if (i === 0) {
+                    ctx.moveTo(i, y);
+                } else {
+                    ctx.lineTo(i, y);
+                }
+            }
+
+            // Настройка стиля линии
+            ctx.strokeStyle = wave.color;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        });
+
+        requestAnimationFrame(draw);
+    }
+
+    // Init
+    resize();
+    draw();
+
+    window.addEventListener('resize', resize);
+}
