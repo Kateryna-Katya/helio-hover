@@ -133,3 +133,102 @@ if (waveCanvas) {
 
     window.addEventListener('resize', resize);
 }
+// --- ANIMATIONS ON SCROLL (GSAP) ---
+    // Находим все элементы с классом reveal-up, reveal-left и т.д.
+    
+    // Fade Up
+    gsap.utils.toArray('.reveal-up').forEach(elem => {
+        gsap.fromTo(elem, 
+            { y: 50, opacity: 0 },
+            {
+                scrollTrigger: {
+                    trigger: elem,
+                    start: "top 85%",
+                },
+                y: 0,
+                opacity: 1,
+                duration: 0.8,
+                ease: "power2.out"
+            }
+        );
+    });
+
+    // Fade Left
+    gsap.utils.toArray('.reveal-left').forEach(elem => {
+        gsap.fromTo(elem, 
+            { x: -50, opacity: 0 },
+            {
+                scrollTrigger: { trigger: elem, start: "top 80%" },
+                x: 0, opacity: 1, duration: 1
+            }
+        );
+    });
+
+    // Fade Right
+    gsap.utils.toArray('.reveal-right').forEach(elem => {
+        gsap.fromTo(elem, 
+            { x: 50, opacity: 0 },
+            {
+                scrollTrigger: { trigger: elem, start: "top 80%" },
+                x: 0, opacity: 1, duration: 1
+            }
+        );
+    });
+
+    // --- FORM LOGIC & CAPTCHA ---
+    const contactForm = document.getElementById('contactForm');
+    if (contactForm) {
+        // Простая математическая капча
+        const num1 = Math.floor(Math.random() * 10) + 1;
+        const num2 = Math.floor(Math.random() * 10) + 1;
+        const captchaLabel = document.getElementById('captchaLabel');
+        const captchaInput = document.getElementById('captcha');
+        const msgBox = document.querySelector('.form__message');
+        
+        captchaLabel.textContent = `Сколько будет ${num1} + ${num2}?`;
+        
+        contactForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const userAnswer = parseInt(captchaInput.value);
+            if (userAnswer !== (num1 + num2)) {
+                msgBox.textContent = "Ошибка: неверная сумма (капча).";
+                msgBox.className = "form__message error";
+                return;
+            }
+            
+            // Имитация отправки
+            const btn = contactForm.querySelector('button');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span>Отправка...</span>';
+            btn.disabled = true;
+
+            setTimeout(() => {
+                btn.innerHTML = '<span>Отправлено!</span>';
+                msgBox.textContent = "Спасибо! Мы свяжемся с вами в ближайшее время.";
+                msgBox.className = "form__message success";
+                contactForm.reset();
+                
+                // Возврат кнопки через 3 сек
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.disabled = false;
+                }, 3000);
+            }, 1500);
+        });
+    }
+
+    // --- COOKIE POPUP ---
+    const cookiePopup = document.getElementById('cookiePopup');
+    const acceptBtn = document.getElementById('acceptCookies');
+    
+    if (!localStorage.getItem('cookiesAccepted')) {
+        setTimeout(() => {
+            cookiePopup.style.display = 'block';
+        }, 2000); // Показать через 2 сек
+    }
+
+    acceptBtn.addEventListener('click', () => {
+        localStorage.setItem('cookiesAccepted', 'true');
+        cookiePopup.style.display = 'none';
+    });
